@@ -1,49 +1,56 @@
-// Wrap all code that interacts with the DOM in a call to jQuery to ensure that
-// the code isn't run until the browser has finished rendering all the elements
-// in the html.
 $(function () {
-    // TODO: Add a listener for click events on the save button. This code should
-    // clicking on save button saves content that user types in
-    // use the id in the containing time-block as a key to save the user input in
-    // local storage. HINT: What does `this` reference in the click listener
-    // function? How can DOM traversal be used to get the "hour-x" id of the
-    // time-block containing the button that was clicked? How might the id be
-    // useful when saving the description in local storage?
-    $(".saveBtn").on("click", function() {
-        pass
+    // creates function to save text entered by user
+    $(".saveBtn").on("click", function () {
+        let timeElement = $(this).parent().children("div");
+        let textAreaElement = $(this).parent().children("textarea");
 
-
+        localStorage.setItem(timeElement.text(), textAreaElement.val());
     });
 
-    // TODO: Add code to apply the past, present, or future class to each time
-    // block by comparing the id to the current hour. HINTS: How can the id
-    // attribute of each time-block be used to conditionally add or remove the
-    // past, present, and future classes? How can Day.js be used to get the
-    // current hour in 24-hour time?
-    
-    
+    // function to apply either present, past, and future to time-block based on the time
+    $(".time-block div").each(function () {
+        let parentElement = $(this).parent();
+        let elementTime = $(this).text().split(" ");
+        let currentTime = parseInt(dayjs().format("H"));
+        let elementTimeAsNumber = parseInt(elementTime[0]);
+        if (elementTime[1] == "PM") {
+            elementTimeAsNumber += 12;
+        }
 
-
-    // TODO: Add code to get any user input that was saved in localStorage and set
-    // the values of the corresponding textarea elements. HINT: How can the id
-    // attribute of each time-block be used to do this?
-    $(".time-block").each(function () {
-        if (parseInt($(this) == dayjs().format("HH A")) {
-            return "present"
-        } else if (parseInt($(this) > ayjs().format("HH A"))) {
-            return "future"
-        } else {
-           return "past"
+        if (elementTimeAsNumber == currentTime) {
+            parentElement.addClass("present");
+            parentElement.removeClass("past");
+            parentElement.removeClass("future");
+        }
+        else if (elementTimeAsNumber > currentTime) {
+            parentElement.removeClass("present");
+            parentElement.removeClass("past");
+            parentElement.addClass("future");
+        }
+        else {
+            parentElement.removeClass("present");
+            parentElement.addClass("past");
+            parentElement.removeClass("future");
         }
     });
-    
 
-    // TODO: Add code to display the current date in the header of the page.
+    // displays the user input if it was saved in local storage
+    $(".time-block textarea").each(function () {
+        let timeElement = $(this).parent().children("div");
+        let userInput = localStorage.getItem(timeElement.text());
+
+        if (userInput !== null) {
+            $(this).val(userInput);
+        }
+    })
+
+
+    // display the current date in the header of the page
     function displayCurrentTime() {
         const currentDay = dayjs();
         const formattedDate = currentDay.format("dddd, MMMM D, YYYY");
         $("#currentDay").text(formattedDate);
     }
 
-        displayCurrentTime();
+    displayCurrentTime();
 });
